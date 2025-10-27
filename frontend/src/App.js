@@ -48,8 +48,7 @@ function App() {
       formData.append('pattern', pattern);
       formData.append('pages_per_student', pagesPerStudent);
 
-      const apiUrl = process.env.REACT_APP_API_URL || '';
-      const response = await axios.post(`${apiUrl}/api/split_pdf`, formData, {
+      const response = await axios.post('/api/split-pdf', formData, {
         responseType: 'blob',
       });
 

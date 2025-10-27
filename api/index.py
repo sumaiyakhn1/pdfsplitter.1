@@ -7,7 +7,6 @@ import zipfile
 import pdfplumber
 from PyPDF2 import PdfWriter, PdfReader
 import io
-import multipart
 
 def extract_scholar_no(text, pattern):
     """Extract Scholar No. from text using custom pattern."""
@@ -82,6 +81,7 @@ class handler(BaseHTTPRequestHandler):
             
             if 'pdf' not in files:
                 self.send_response(400)
+                self.send_header('Content-Type', 'application/json')
                 self.end_headers()
                 self.wfile.write(json.dumps({'error': 'No PDF file provided'}).encode())
                 return
@@ -114,7 +114,7 @@ class handler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-Type', 'application/zip')
             self.send_header('Content-Disposition', 'attachment; filename=split_pdfs.zip')
-            self.send_header('Content-Length', str(len(zip_buffer.getvalue())))
+            self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             self.wfile.write(zip_buffer.getvalue())
             
@@ -123,13 +123,15 @@ class handler(BaseHTTPRequestHandler):
             traceback.print_exc()
             self.send_response(500)
             self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             self.wfile.write(json.dumps({'error': str(e)}).encode())
     
     def do_GET(self):
-        if self.path == '/health':
+        if '/health' in self.path:
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             self.wfile.write(json.dumps({'status': 'ok'}).encode())
         else:
